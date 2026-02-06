@@ -30,15 +30,24 @@
             border-radius: 40px;
             text-align: center;
             box-shadow: 0 25px 50px rgba(0,0,0,0.2);
-            min-width: 300px;
-            max-width: fit-content; 
+            min-width: 400px;
+            min-height: 250px; /* Assure une base stable pour le centrage */
             z-index: 10;
             position: relative;
-            /* Flexbox ici pour centrer le contenu final */
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            justify-content: center; /* Centre verticalement */
+            align-items: center;     /* Centre horizontalement */
+        }
+
+        #timer {
+            font-size: 1.1em;
+            color: #ff0055;
+            margin-bottom: 20px;
+            font-weight: 600;
+            background: #fff0f5;
+            padding: 10px 20px;
+            border-radius: 15px;
         }
 
         h1 {
@@ -66,49 +75,37 @@
             min-width: 140px;
         }
 
-        #oui {
-            background: #ff0055;
-            color: white;
-            box-shadow: 0 10px 20px rgba(255, 0, 85, 0.3);
-            z-index: 100;
-        }
-
-        #non {
-            background: #f1f2f6;
-            color: #2d3436;
-        }
+        #oui { background: #ff0055; color: white; z-index: 100; }
+        #non { background: #f1f2f6; color: #2d3436; }
 
         .heart {
             position: fixed;
             top: -10vh;
             font-size: 2rem;
-            user-select: none;
-            z-index: 5;
             animation: fall linear forwards;
         }
 
-        @keyframes fall {
-            to { transform: translateY(110vh) rotate(360deg); }
-        }
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
 
         .final {
             color: #ff0055;
-            font-size: 2.2em;
-            white-space: normal;
-            margin: 0; /* Enlève les marges par défaut pour un centrage parfait */
+            font-size: 2.4em;
+            margin: 0;
             animation: pulse 1.5s infinite;
+            white-space: normal;
+            line-height: 1.2;
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); }
+            0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
         }
     </style>
 </head>
 <body>
 
     <div class="boite" id="contenu">
+        <div id="timer">Calcul du temps...</div>
         <h1>Veux-tu être ma Valentine ? ❤️</h1>
         <div class="boutons">
             <button id="oui" onclick="bravo()">Oui</button>
@@ -117,6 +114,28 @@
     </div>
 
     <script>
+        // --- COMPTE À REBOURS ---
+        const dateCible = new Date("Feb 14, 2026 00:00:00").getTime();
+        const timerElement = document.getElementById('timer');
+
+        const compteARebours = setInterval(() => {
+            const maintenant = new Date().getTime();
+            const distance = dateCible - maintenant;
+
+            const jours = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const heures = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const secondes = Math.floor((distance % (1000 * 60)) / 1000);
+
+            timerElement.innerText = `Temps restant : ${jours}j ${heures}h ${minutes}m ${secondes}s`;
+
+            if (distance < 0) {
+                clearInterval(compteARebours);
+                timerElement.innerText = "C'est le grand jour ! ❤️";
+            }
+        }, 1000);
+
+        // --- LOGIQUE ---
         let scale = 1;
         function grossir() {
             const oui = document.getElementById('oui');
@@ -125,13 +144,11 @@
         }
 
         function bravo() {
+            clearInterval(compteARebours);
             const boite = document.getElementById('contenu');
-            // On fige la hauteur actuelle de la boîte avant de changer le texte
-            const currentHeight = boite.offsetHeight;
-            boite.style.minHeight = currentHeight + "px";
-            
+            // On garde la taille actuelle pour le centrage
+            boite.style.minHeight = boite.offsetHeight + "px";
             boite.innerHTML = "<h1 class='final'>Rendez-vous le 14 février ! 🥰</h1>";
-            
             setInterval(createHeart, 150);
         }
 
@@ -146,6 +163,5 @@
             setTimeout(() => { heart.remove(); }, 5000);
         }
     </script>
-
 </body>
 </html>
