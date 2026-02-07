@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Pour toi ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+            background: linear-gradient(45deg, #ff0055, #ff5858, #ffcc70, #c850c0);
+            background-size: 400% 400%;
+            animation: aurora 10s ease infinite;
+        }
+
+        @keyframes aurora {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .boite {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 50px 60px;
+            border-radius: 40px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+            min-width: 450px;
+            min-height: 350px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Centre verticalement le contenu */
+            align-items: center;     /* Centre horizontalement le contenu */
+            position: relative;
+        }
+
+        #timer {
+            font-size: 1.1em;
+            color: #ff0055;
+            margin-bottom: 20px;
+            font-weight: 600;
+            background: #fff0f5;
+            padding: 10px 20px;
+            border-radius: 15px;
+        }
+
+        h1 {
+            color: #2d3436;
+            font-size: 1.8em;
+            margin: 0 0 40px 0;
+            line-height: 1.4;
+            max-width: 500px;
+        }
+
+        .boutons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        button {
+            border: none;
+            padding: 18px 30px;
+            font-size: 1.1em;
+            font-weight: 800;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            min-width: 140px;
+        }
+
+        #oui { background: #ff0055; color: white; z-index: 100; }
+        #non { background: #f1f2f6; color: #2d3436; }
+
+        .heart {
+            position: fixed;
+            top: -10vh;
+            font-size: 2rem;
+            animation: fall linear forwards;
+            pointer-events: none;
+        }
+
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+
+        .final {
+            color: #ff0055;
+            font-size: 2.4em;
+            margin: 0; /* Suppression des marges pour un centrage parfait */
+            animation: pulse 1.5s infinite;
+            text-align: center;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="boite" id="contenu">
+        <div id="timer">Calcul du temps...</div>
+        <h1 id="question">Accepterais-tu d'être le sucre de ma vie et ma valentine pour l'éternité ? ✨</h1>
+        <div class="boutons" id="zone-boutons">
+            <button id="oui" onclick="prochaineEtape()">Oui</button>
+            <button id="non" onclick="grossir()">Non</button>
+        </div>
+    </div>
+
+    <script>
+        // --- TIMER JUSQU'AU 14 FÉVRIER ---
+        const dateCible = new Date("Feb 14, 2026 00:00:00").getTime();
+        const intervalTimer = setInterval(() => {
+            const distance = dateCible - new Date().getTime();
+            const j = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((distance % (1000 * 60)) / 1000);
+            const timerEl = document.getElementById('timer');
+            if(timerEl) timerEl.innerText = `Temps restant : ${j}j ${h}h ${m}m ${s}s`;
+        }, 1000);
+
+        // --- ENCHAÎNEMENT DES QUESTIONS ---
+        let etape = 0;
+        let scale = 1;
+
+        function grossir() {
+            const oui = document.getElementById('oui');
+            scale += 0.8;
+            oui.style.transform = `scale(${scale})`;
+        }
+
+        function prochaineEtape() {
+            const h1 = document.getElementById('question');
+            const oui = document.getElementById('oui');
+            
+            scale = 1;
+            oui.style.transform = `scale(${scale})`;
+
+            if (etape === 0) {
+                h1.innerText = "Mon cœur fait 'boum-boum' pour toi, seras-tu ma valentine ? 💓";
+                etape++;
+            } else if (etape === 1) {
+                h1.innerText = "Veux-tu remplir mon cœur de bonheur en devenant ma valentine ? 🌈";
+                oui.onclick = bravo;
+                etape++;
+            }
+        }
+
+        function bravo() {
+            clearInterval(intervalTimer);
+            const boite = document.getElementById('contenu');
+            
+            // On vide tout et on remplace par le message final seul
+            boite.innerHTML = "<h1 class='final'>Rendez-vous le 14 février ! 🥰</h1>";
+            
+            // Pluie de cœurs
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '❤️';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = Math.random() * 2 + 3 + 's';
+                heart.style.opacity = Math.random();
+                document.body.appendChild(heart);
+                setTimeout(() => heart.remove(), 5000);
+            }, 150);
+        }
+    </script>
+</body>
+</html>
